@@ -1,24 +1,20 @@
-import mongoose from "mongoose";
+import { MongoClient } from "mongodb";
 
-const MONGO_URI = process.env.MONGO_URI;
+const uri = process.env.MONGO_URI;
 
-if (!MONGO_URI) {
-  throw new Error("Please define MONGO_URI");
+let client;
+let clientPromise;
+
+if (!global._mongoClientPromise) {
+  client = new MongoClient(uri);
+  global._mongoClientPromise = client.connect();
 }
 
-let cached = global.mongoose;
+clientPromise = global._mongoClientPromise;
 
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
-}
+export async function connectToDatabase() {
+  const client = await clientPromise;
+  const db = client.db("milk-record");
 
-export default async function dbConnect() {
-  if (cached.conn) return cached.conn;
-
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGO_URI);
-  }
-
-  cached.conn = await cached.promise;
-  return cached.conn;
+  return { client, db };
 }

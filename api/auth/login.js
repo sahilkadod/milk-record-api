@@ -1,22 +1,20 @@
-import dbConnect from "../../db";
-import bcrypt from "bcryptjs";
-import { signToken } from "../../lib/jwt";
+import { connectToDatabase } from "../../db.js";
 
 export default async function handler(req, res) {
-  await dbConnect();
+
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  const { db } = await connectToDatabase();
 
   const { username, password } = req.body;
 
-  // find user in DB
-  const user = { username, password: "$2a$10..." }; // example
+  const user = await db.collection("users").findOne({ username });
 
-  const valid = await bcrypt.compare(password, user.password);
-
-  if (!valid) {
-    return res.status(401).json({ message: "Invalid credentials" });
+  if (!user) {
+    return res.status(401).json({ error: "User not found" });
   }
 
-  const token = signToken({ username });
-
-  res.json({ token });
+  res.json({ message: "Login successful" });
 }
