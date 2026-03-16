@@ -1,0 +1,16 @@
+# dependencies
+node_modules/
+
+# env files
+.env
+.env*.local
+
+# vercel
+.vercel
+
+# build
+dist/
+build/
+
+# logs
+*.log
