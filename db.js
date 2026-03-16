@@ -3,7 +3,7 @@ import { MongoClient } from "mongodb";
 const uri = process.env.MONGO_URI;
 
 if (!uri) {
-  throw new Error("Please define the MONGO_URI environment variable inside .env or Vercel settings");
+  throw new Error("Please define MONGO_URI in Vercel environment variables");
 }
 
 let client;
@@ -18,6 +18,6 @@ clientPromise = global._mongoClientPromise;
 
 export async function connectToDatabase() {
   const client = await clientPromise;
-  const db = client.db(); // Uses database from URI, e.g. 'milk-record'
+  const db = client.db(); // Uses 'milk-record' from URI
   return { client, db };
 }
