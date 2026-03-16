@@ -1,16 +1,18 @@
-import auth from "../../middleware/auth";
+import { connectToDatabase } from "../../db.js";
 
 export default async function handler(req, res) {
-
   try {
-    auth(req);
+    if (!process.env.MONGO_URI) {
+      throw new Error("MONGO_URI env var not set");
+    }
 
-    const customers = [];
+    const { db } = await connectToDatabase();
 
-    res.json(customers);
+    const customers = await db.collection("customers").find({}).toArray();
 
-  } catch (err) {
-    res.status(401).json({ error: err.message });
+    res.status(200).json(customers);
+  } catch (error) {
+    console.error("Error in /api/customers/list:", error);
+    res.status(500).json({ error: error.message || "Internal Server Error" });
   }
-
 }
