@@ -1,6 +1,7 @@
 import { connectToDatabase } from "../../db.js";
 
 export default async function handler(req, res) {
+  console.log("List customers - fetched data: progress started");
   try {
     const { db } = await connectToDatabase();
 
